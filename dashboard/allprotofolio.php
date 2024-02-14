@@ -4,27 +4,8 @@ session_start();
 require_once "lib/protoflio.php";
 
 
+$data = GetProtoflios();
 
-if (isset($_POST['desc'])) {
-
-    $desc = $_POST['desc'];
-    $tmp =  $_FILES['img']['tmp_name'];
-    $filename = $_FILES['img']['name'];
-    $user_id =  $_SESSION['user']['id'];
-
-
-    move_uploaded_file($tmp ,"upload/" . $filename);
-
-    $res = addNewPro($filename ,$desc , $user_id);
-
-    if($res == true) {
-        $success = 'Project has been insrted'; 
-    }else{
-        $error = 'Project hasnّ t been insrted'; 
-
-    }
-    
-}
 
 
 
@@ -62,6 +43,10 @@ if (isset($_POST['desc'])) {
     <link rel="stylesheet" href="backassets/plugins/summernote/summernote-bs4.css">
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    <link rel="stylesheet" href="backassets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="backassets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+
+
 </head>
 
 <body class="hold-transition sidebar-mini layout-fixed">
@@ -156,60 +141,47 @@ if (isset($_POST['desc'])) {
             <!-- Main content -->
             <section class="content">
                 <div class="container-fluid">
-                    <?php if(isset($success) OR isset($error)):  ?>
-
-                    <div class="alert<?php if(isset($success)): ?> alert-success <?php else: ?>alert-danger
-                    <?php endif; ?> alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
-                        <h5><i class="icon fas fa-ban"></i> Alert!</h5>
-
-                        <ul>
-                            <li><?php echo (isset($success)) ? $success : $error ?></li>
-                        </ul>
-
-                    </div>
-                    <?php endif; ?>
-
                     <div class="card card-primary">
-                        <div class="card-header">
-                            <h3 class="card-title">Quick Example</h3>
-                        </div>
                         <!-- /.card-header -->
                         <!-- form start -->
-                        <form role="form" action="protofolio.php" method="post" enctype="multipart/form-data">
-                            <div class="card-body">
-                                <div class="form-group">
-                                    <label for="exampleInputEmail1">description</label>
-                                    <textarea class="form-control textarea" name="desc"></textarea>
-                                </div>
+                       
 
-                                <div class="form-group">
-                                    <label for="exampleInputFile">File input</label>
-                                    <div class="input-group">
-                                        <div class="custom-file">
-                                            <input type="file" name="img" class="custom-file-input"
-                                                id="exampleInputFile">
-                                            <label class="custom-file-label" for="exampleInputFile">Choose file</label>
-                                        </div>
-                                        <div class="input-group-append">
-                                            <span class="input-group-text" id="">Upload</span>
-                                        </div>
-                                    </div>
-                                </div>
+ <!-- /.card-header -->
+ <div class="card-body">
+                <table id="example2" class="table table-bordered table-striped">
+                  <thead>
+                  <tr>
+                  <th>desc</th>
+                    <th>user</th>
+                    <th>img</th>
+                    <th>Update</th>
+                    <th>Delete</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                <?php  foreach($data as $pro): ?>
+                  <tr>
+                    <td><?php echo $pro['description']; ?></td>
+                    <td><?php echo $pro['name']; ?> </td>
+                    <td><img height="200px" width="200px" src="upload/<?php echo $pro['img']; ?>" alt="img"></td>
+                    <td><a href="updateprotofolio.php?proid=<?= $pro['id']; ?>" class="btn btn-success">Update</a> </td>
+                    <td><a href="deleteprotofolio.php?proid=<?= $pro['id']; ?>" class="btn btn-danger">Delete</a></td>
+                  </tr>
+                <?php endforeach;?>
+                  <tfoot>
+                  <tr>
+                    <th>desc</th>
+                    <th>user</th>
+                    <th>img</th>
+                    <th>Update</th>
+                    <th>Delete</th>
+                  </tr>
+                  </tfoot>
+                </table>
+              </div>
 
-                            </div>
-                            <!-- /.card-body -->
 
-                            <div class="card-footer">
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </div>
-                        </form>
-                    </div>
-
-
-
-
-
+ </div>
 
                 </div><!-- /.container-fluid -->
             </section>
@@ -263,6 +235,27 @@ if (isset($_POST['desc'])) {
         // Summernote
         $('.textarea').summernote()
     })
+    </script>
+<script src="backassets/plugins/datatables/jquery.dataTables.min.js"></script>
+<script src="backassets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+<script src="backassets/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+<script src="backassets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+
+
+
+    <script>
+
+$(function () {
+    $('#example2').DataTable({
+      "paging": true,
+      "lengthChange": false,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "autoWidth": false,
+      "responsive": true,
+    });
+  });
     </script>
     <!-- overlayScrollbars -->
     <script src="backassets/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js"></script>

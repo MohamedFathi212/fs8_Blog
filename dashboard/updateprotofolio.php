@@ -5,26 +5,39 @@ require_once "lib/protoflio.php";
 
 
 
+
 if (isset($_POST['desc'])) {
 
+    $pro_id = $_POST['pro_id'];
     $desc = $_POST['desc'];
-    $tmp =  $_FILES['img']['tmp_name'];
-    $filename = $_FILES['img']['name'];
-    $user_id =  $_SESSION['user']['id'];
 
 
-    move_uploaded_file($tmp ,"upload/" . $filename);
+    if(isset($_FILES['img']['tmp_name'])){
+        $tmp =  $_FILES['img']['tmp_name'];
+        $filename = $_FILES['img']['name'];
+        move_uploaded_file($tmp ,"upload/" . $filename);
+    }
+    else{
+        $filename = '';
+    }
 
-    $res = addNewPro($filename ,$desc , $user_id);
+
+    $res = UpdatePro($pro_id , $desc , $filename);
+
 
     if($res == true) {
-        $success = 'Project has been insrted'; 
+       header("location:allprotofolio.php");
     }else{
         $error = 'Project hasnّ t been insrted'; 
 
     }
     
+}else{
+    $pro_id = $_GET['proid'] ;
+
+    $data = GetProtoflioByID($pro_id);
 }
+
 
 
 
@@ -176,12 +189,15 @@ if (isset($_POST['desc'])) {
                         </div>
                         <!-- /.card-header -->
                         <!-- form start -->
-                        <form role="form" action="protofolio.php" method="post" enctype="multipart/form-data">
+                        <form role="form" action="updateprotofolio.php" method="post" enctype="multipart/form-data">
                             <div class="card-body">
                                 <div class="form-group">
                                     <label for="exampleInputEmail1">description</label>
-                                    <textarea class="form-control textarea" name="desc"></textarea>
+                                    <textarea class="form-control textarea" name="desc"><?= $data['description'];?></textarea>
                                 </div>
+
+                                <img width="200px" height="200px" src="upload/<?= $data['img'];?>" alt="img">
+
 
                                 <div class="form-group">
                                     <label for="exampleInputFile">File input</label>
@@ -194,6 +210,7 @@ if (isset($_POST['desc'])) {
                                         <div class="input-group-append">
                                             <span class="input-group-text" id="">Upload</span>
                                         </div>
+                                        <input type="hidden" name="pro_id"  value="<?= $pro_id ?>">
                                     </div>
                                 </div>
 
@@ -201,7 +218,7 @@ if (isset($_POST['desc'])) {
                             <!-- /.card-body -->
 
                             <div class="card-footer">
-                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <button type="submit" class="btn btn-primary">Update</button>
                             </div>
                         </form>
                     </div>

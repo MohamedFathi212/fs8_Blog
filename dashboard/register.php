@@ -84,11 +84,6 @@ if (isset($_POST['name'])) {
                         <?php endforeach;  ?>
                     </ul>
 
-
-
-
-
-
                 </div>
 
 
